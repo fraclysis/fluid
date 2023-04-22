@@ -1,0 +1,7 @@
+target/
+.vscode/
+assets/
+site/
+layouts/
+out/
+includes/

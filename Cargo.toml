@@ -1,0 +1,14 @@
+[package]
+name = "fluid"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+yaml-rust = "0.4.5"
+comrak = "0.18.0"
+lazy_static = "1.4.0"
+regex = "1.7.0"
+libloading = "0.8.0"
+log = "0.4.17"
