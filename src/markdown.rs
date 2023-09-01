@@ -41,7 +41,7 @@ fn get_markdown_adapter() -> &'static SyntectAdapter {
         match &MARKDOWN_ADAPTER {
             Some(adapter) => adapter,
             None => {
-                let adapter = SyntectAdapter::new("base16-ocean.dark");
+                let adapter = SyntectAdapter::new("base16-ocean.light");
                 MARKDOWN_ADAPTER = Some(adapter);
 
                 match &MARKDOWN_ADAPTER {
@@ -64,6 +64,5 @@ pub fn markdown(text: &str) -> String {
         },
     };
 
-    
     comrak::markdown_to_html_with_plugins(text, options, &plugins)
 }
