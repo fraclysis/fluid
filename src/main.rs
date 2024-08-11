@@ -1,4 +1,5 @@
 pub mod liquid;
+#[cfg(feature = "live")]
 mod live_reload;
 mod markdown;
 pub mod parser;
@@ -13,6 +14,7 @@ use std::{
 };
 
 use clap::Parser;
+#[cfg(feature = "live")]
 use live_reload::live_reload_thread;
 use watcher::{Watcher, LAYOUTS_FOLDER_STATUS_ID};
 
@@ -48,22 +50,27 @@ fn main() -> Result<(), Error> {
         Cmd::New => {}
         Cmd::Build => {}
         Cmd::Serve => {
-            let watcher = Watcher::new()?;
-            let (users, _handle) = live_reload_thread((config.host, config.port).into())?;
+            #[cfg(feature = "live")]
+            {
+                let watcher = Watcher::new()?;
+                let (users, _handle) = live_reload_thread((config.host, config.port).into())?;
 
-            let runtime = tokio::runtime::Builder::new_current_thread().build()?;
+                let runtime = tokio::runtime::Builder::new_current_thread().build()?;
 
-            match watcher.watch(|status| {
-                sleep(Duration::from_micros(100));
+                match watcher.watch(|status| {
+                    sleep(Duration::from_micros(100));
 
-                let reset_layout = status == LAYOUTS_FOLDER_STATUS_ID;
+                    let reset_layout = status == LAYOUTS_FOLDER_STATUS_ID;
 
-                reload_site(&plugins, &config, reset_layout);
-                runtime.block_on(async { live_reload::update(&users).await });
-            }) {
-                Ok(_) => println!("Exit signal received."),
-                Err(e) => eprintln!("{}", e),
+                    reload_site(&plugins, &config, reset_layout);
+                    runtime.block_on(async { live_reload::update(&users).await });
+                }) {
+                    Ok(_) => println!("Exit signal received."),
+                    Err(e) => eprintln!("{}", e),
+                }
             }
+            #[cfg(not(feature = "live"))]
+            todo!()
         }
     }
 
