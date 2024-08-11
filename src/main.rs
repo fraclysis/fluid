@@ -4,6 +4,8 @@ mod live_reload;
 mod markdown;
 pub mod parser;
 pub mod plugins;
+
+#[cfg(feature = "live")]
 mod watcher;
 
 use std::{
