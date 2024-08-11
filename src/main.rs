@@ -18,6 +18,7 @@ use std::{
 use clap::Parser;
 #[cfg(feature = "live")]
 use live_reload::live_reload_thread;
+#[cfg(feature = "live")]
 use watcher::{Watcher, LAYOUTS_FOLDER_STATUS_ID};
 
 use crate::{
