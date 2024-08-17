@@ -6,10 +6,11 @@ use std::{
 };
 
 use crate::{
+    helper::MutRef,
+    liquid::Liquid,
     liquid::{LiquidInner, MutRc, OptionToResult},
     markdown::markdown,
     parser::{parse, LiquidResult, LiquidState, PAGE_CONTENT, PAGE_FRONT_MATTER_OFFSET},
-    Liquid, MutRef,
 };
 
 pub type PfnLiquidFunction = fn(state: &LiquidState, object: &Liquid) -> LiquidResult;
@@ -22,13 +23,22 @@ pub type PfnLiquidFilter =
 pub type PfnLiquidAsset =
     fn(plugins: &Plugins, object: &Liquid, path: &OsStr) -> Result<(), io::Error>;
 
-const LIQUID_TAGS: &[(&str, PfnLiquidTag)] =
-    &[("assign", pfn_assign), ("include", pfn_include), ("error", pfn_error)];
-const LIQUID_BLOCKS: &[(&str, PfnLiquidBlock)] =
-    &[("capture", pfn_capture), ("if", pfn_if_block), ("comment", pfn_comment)];
+const LIQUID_TAGS: &[(&str, PfnLiquidTag)] = &[
+    ("assign", pfn_assign),
+    ("include", pfn_include),
+    ("error", pfn_error),
+];
+const LIQUID_BLOCKS: &[(&str, PfnLiquidBlock)] = &[
+    ("capture", pfn_capture),
+    ("if", pfn_if_block),
+    ("comment", pfn_comment),
+];
 const LIQUID_FILTERS: &[(&str, PfnLiquidFilter)] = &[("dbg", pfn_dbg)];
-const LIQUID_FUNCTIONS: &[(&str, PfnLiquidFunction)] =
-    &[("content", pfn_content), ("len", pfn_len), ("dbg_fn", pfn_dbg_fn)];
+const LIQUID_FUNCTIONS: &[(&str, PfnLiquidFunction)] = &[
+    ("content", pfn_content),
+    ("len", pfn_len),
+    ("dbg_fn", pfn_dbg_fn),
+];
 const LIQUID_ASSETS: &[(&str, PfnLiquidAsset)] = &[];
 
 #[derive(Default)]
@@ -116,7 +126,11 @@ fn pfn_include<'a>(state: &LiquidState, object: &Liquid, tag: &str) -> LiquidRes
     let a: Vec<&str> = tag.split(" ").collect();
     let include_file = a.last().unwrap().trim();
 
-    let mut new_state = LiquidState { file_path: "", current_line: 0, ..*state };
+    let mut new_state = LiquidState {
+        file_path: "",
+        current_line: 0,
+        ..*state
+    };
 
     let mut path = PathBuf::from("includes");
 
@@ -216,7 +230,10 @@ fn pfn_len(_state: &LiquidState, liq: &Liquid) -> LiquidResult {
 fn pfn_content(state: &LiquidState, page: &Liquid) -> LiquidResult {
     let binding = state.get_key(page, PAGE_CONTENT)?;
     let raw_content = binding.as_string().result(state)?;
-    let mut offset = state.get_key(page, PAGE_FRONT_MATTER_OFFSET)?.as_int().result(state)?;
+    let mut offset = state
+        .get_key(page, PAGE_FRONT_MATTER_OFFSET)?
+        .as_int()
+        .result(state)?;
     let binding = state.get_key(page, "path")?;
     let path = binding.as_string().result(state)?;
 
@@ -226,7 +243,11 @@ fn pfn_content(state: &LiquidState, page: &Liquid) -> LiquidResult {
 
     let object = page.clone();
 
-    let new_state = LiquidState { plugins: state.plugins, file_path: path, ..*state };
+    let new_state = LiquidState {
+        plugins: state.plugins,
+        file_path: path,
+        ..*state
+    };
     Ok(markdown(&parse(&new_state, &object, &raw_content, offset as usize)?).into())
 }
 

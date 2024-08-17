@@ -1,5 +1,8 @@
+use std::rc::{Rc, Weak};
+
 use comrak::{
-    self, plugins::syntect::SyntectAdapter, ComrakOptions, ComrakPlugins, ComrakRenderOptions,
+    self, adapters::SyntaxHighlighterAdapter, plugins::syntect::SyntectAdapter, ComrakOptions,
+    ComrakPlugins, ComrakRenderOptions,
 };
 
 const MARKDOWN_OPTIONS: ComrakOptions = {
@@ -65,4 +68,34 @@ pub fn markdown(text: &str) -> String {
     };
 
     comrak::markdown_to_html_with_plugins(text, options, &plugins)
+}
+
+struct CssAdapter {}
+
+impl SyntaxHighlighterAdapter for CssAdapter {
+    fn write_highlighted(
+        &self,
+        output: &mut dyn std::io::Write,
+        lang: Option<&str>,
+        code: &str,
+    ) -> std::io::Result<()> {
+        todo!()
+    }
+
+    fn write_pre_tag(
+        &self,
+        output: &mut dyn std::io::Write,
+        attributes: std::collections::HashMap<String, String>,
+    ) -> std::io::Result<()> {
+        todo!()
+    }
+
+    fn write_code_tag(
+        &self,
+        output: &mut dyn std::io::Write,
+        attributes: std::collections::HashMap<String, String>,
+    ) -> std::io::Result<()> {
+
+        todo!()
+    }
 }

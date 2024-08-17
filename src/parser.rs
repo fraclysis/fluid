@@ -11,9 +11,9 @@ use std::{
 use yaml_rust::Yaml;
 
 use crate::{
+    helper::IntoIoResult,
     liquid::{Liquid, LiquidInner, MutRc, Object, OptionToResult},
     plugins::Plugins,
-    IntoIoResult,
 };
 
 pub type LiquidResult = Result<Liquid, ParseError>;
@@ -386,14 +386,12 @@ fn create_folder<P: AsRef<Path>>(path: P, parent_folder: MutRc<Object>) -> Resul
         })
         .unwrap();
 
-    {
-        parent_folder
-            .get(FOLDER_FIELDS_FOLDER)
-            .expect("folders not found")
-            .as_array()
-            .result(&())?
-            .push(new_folder.clone());
-    }
+    parent_folder
+        .get(FOLDER_FIELDS_FOLDER)
+        .expect("folders not found")
+        .as_array()
+        .result(&())?
+        .push(new_folder.clone());
 
     for e in fs::read_dir(path)? {
         fn inner(e: Result<DirEntry, io::Error>, parent: MutRc<Object>) -> Result<(), io::Error> {
@@ -452,7 +450,10 @@ fn create_file(path: PathBuf, parent: MutRc<Object>) -> Result<(), io::Error> {
     let path_str = match path.to_str() {
         Some(s) => s,
         None => {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "Path is not utf8"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "Path is not utf8",
+            ));
         }
     };
 
@@ -498,7 +499,12 @@ fn create_file(path: PathBuf, parent: MutRc<Object>) -> Result<(), io::Error> {
         })
         .io_result()?;
 
-    parent.get(FOLDER_FIELDS_FILES).io_result()?.as_array().io_result()?.push(front_matter);
+    parent
+        .get(FOLDER_FIELDS_FILES)
+        .io_result()?
+        .as_array()
+        .io_result()?
+        .push(front_matter);
 
     Ok(())
 }
@@ -530,7 +536,10 @@ pub struct ParseError {
 
 impl<'a> ParseError {
     pub fn new(message: String) -> Self {
-        ParseError { stack: Vec::new(), message }
+        ParseError {
+            stack: Vec::new(),
+            message,
+        }
     }
 
     pub fn new_in_parse<'s>(
@@ -539,7 +548,10 @@ impl<'a> ParseError {
         to_parse: &'s str,
         found: regex::Match<'s>,
     ) -> Self {
-        Self { stack: vec![StackInfo::new_info(state, to_parse, found)], message }
+        Self {
+            stack: vec![StackInfo::new_info(state, to_parse, found)],
+            message,
+        }
     }
 
     pub fn add_stack(
