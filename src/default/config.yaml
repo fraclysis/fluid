@@ -1,0 +1,20 @@
+# Theme load order
+themes:
+  - default
+
+site:
+  icon: assets/icon.png
+  title: My Title
+
+# Debug options requires developer feature
+debug:
+  live-reload: true
+  port: 3000
+  hosts:
+    - "127.0.0.1"
+
+# Does nothing
+plugins:
+  - *
+
+output: out
