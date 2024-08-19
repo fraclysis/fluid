@@ -327,7 +327,7 @@ pub fn site_parse(liquid_tags: &Plugins) -> Result<(), Error> {
         Ok(())
     }
 
-    let working_dir = PathBuf::from("site");
+    let working_dir = PathBuf::from("content");
 
     let parent = create_folder_starter(working_dir).unwrap();
 

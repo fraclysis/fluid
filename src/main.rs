@@ -37,12 +37,20 @@ enum Cmd {
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Args {
+    #[arg(short = 'C')]
+    cd: Option<String>,
+
     #[command(subcommand)]
     command: Cmd,
 }
 
 fn main() -> Result<(), Error> {
     let args = Args::parse();
+
+    if let Some(cd) = &args.cd {
+        std::env::set_current_dir(cd).warn();
+    }
+
     let config = Config::new()?;
 
     let plugins = Plugins::new();
@@ -104,7 +112,7 @@ pub struct Config {
 
 impl Config {
     fn new() -> Result<Self, Error> {
-        let file = std::fs::read_to_string("fluid.yaml")?;
+        let file = std::fs::read_to_string("config.yaml")?;
         let mut file = match yaml_rust::YamlLoader::load_from_str(&file) {
             Ok(y) => y,
             Err(e) => return Err(Error::new(ErrorKind::InvalidData, e)),
@@ -180,3 +188,5 @@ impl<T> IntoIoResult<T> for Option<T> {
         }
     }
 }
+
+pub mod site;

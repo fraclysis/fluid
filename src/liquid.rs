@@ -239,43 +239,33 @@ impl Liquid {
         }
     }
 
-    pub fn with_string<T>(&self, mut f: impl FnMut(&mut String) -> Option<T>) -> Option<T> {
+    pub fn with_string(&self, mut f: impl FnMut(&mut String)) {
         if let Some(v) = self.as_string() {
             f(v)
-        } else {
-            None
         }
     }
 
-    pub fn with_int<T>(&self, mut f: impl FnMut(i64) -> Option<T>) -> Option<T> {
+    pub fn with_int(&self, mut f: impl FnMut(i64)) {
         if let Some(v) = self.as_int() {
             f(v)
-        } else {
-            None
         }
     }
 
-    pub fn with_bool<T>(&self, mut f: impl FnMut(bool) -> Option<T>) -> Option<T> {
+    pub fn with_bool(&self, mut f: impl FnMut(bool)) {
         if let Some(v) = self.as_bool() {
             f(v)
-        } else {
-            None
         }
     }
 
-    pub fn with_object<T>(&self, mut f: impl FnMut(&mut Object) -> Option<T>) -> Option<T> {
+    pub fn with_object(&self, mut f: impl FnMut(&mut Object)) {
         if let Some(mut v) = self.as_object() {
             f(&mut v)
-        } else {
-            None
         }
     }
 
-    pub fn with_array<T>(&self, mut f: impl FnMut(&mut Array) -> Option<T>) -> Option<T> {
+    pub fn with_array(&self, mut f: impl FnMut(&mut Array)) {
         if let Some(mut v) = self.as_array() {
             f(&mut v)
-        } else {
-            None
         }
     }
 }
